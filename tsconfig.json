@@ -13,7 +13,8 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
+    "paths": { "metro-glass": ["./src/index.ts"] },
     "types": ["vitest/globals", "@testing-library/jest-dom"]
   },
-  "include": ["src", ".storybook", "vite.config.ts"]
+  "include": ["src", ".storybook", "demo", "vite.config.ts", "vite.demo.config.ts"]
 }

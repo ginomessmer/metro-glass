@@ -14,7 +14,7 @@ const withMetro: Decorator = (Story, { globals, parameters }) => (
     {parameters.metroPage === false ? (
       <Story />
     ) : (
-      <Page as="div">
+      <Page as="main">
         <Story />
       </Page>
     )}

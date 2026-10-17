@@ -116,4 +116,19 @@ npm test                 # Vitest + Testing Library + axe
 npm run typecheck
 npm run build            # dist/: ESM + .d.ts + metro-glass.css + navigation.css
 npm run build-storybook
+npm run dev:demo         # demo app on :5173
+npm run build:site       # demo → site/, Storybook → site/storybook/
 ```
+
+## Hosting (Cloudflare Workers)
+
+The demo and Storybook are served by an assets-only Worker ([`wrangler.jsonc`](wrangler.jsonc)):
+
+| Path | Content |
+| --- | --- |
+| `/` | demo app (SPA; unknown paths fall back to `index.html`) |
+| `/storybook/` | Storybook |
+
+Deploys run through **Cloudflare Workers Builds**, connected to this repository: pushes to `main` run
+`npm run build:site` and `npx wrangler deploy`; other branches upload a preview version
+(`npx wrangler versions upload`) with its own preview URL. Manual deploy: `npm run deploy`.

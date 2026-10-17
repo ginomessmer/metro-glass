@@ -1,0 +1,121 @@
+/* Demo-only styles. Unlayered, so they win over the library's layers. */
+html,
+body {
+  margin: 0;
+}
+
+.demo-root {
+  min-block-size: 100dvh;
+}
+
+.demo-bar {
+  position: sticky;
+  inset-block-start: var(--mg-space-3);
+  z-index: 10;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--mg-space-3);
+  margin-block-end: var(--mg-space-6);
+  padding: var(--mg-space-2) var(--mg-space-4);
+  border-radius: var(--mg-radius-pill);
+  view-transition-name: demo-bar;
+
+  & ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+}
+
+.demo-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--mg-space-2);
+  border-radius: var(--mg-radius-sm);
+  color: var(--mg-fg);
+  font-size: 1.25rem;
+  font-weight: var(--mg-font-light);
+  text-decoration: none;
+}
+
+.demo-logo {
+  inline-size: 22px;
+  block-size: 22px;
+  border-radius: 4px;
+  background:
+    linear-gradient(var(--mg-accent) 0 0) 0 0 / 46% 46% no-repeat,
+    linear-gradient(oklch(from var(--mg-accent) l c calc(h + 60)) 0 0) 100% 0 / 46% 46% no-repeat,
+    linear-gradient(oklch(from var(--mg-accent) l c calc(h - 60)) 0 0) 0 100% / 46% 46% no-repeat,
+    linear-gradient(oklch(from var(--mg-accent) l c calc(h + 120)) 0 0) 100% 100% / 46% 46% no-repeat;
+}
+
+.demo-skip {
+  position: absolute;
+  inset-inline-start: var(--mg-space-4);
+  inset-block-start: -100px;
+  padding: var(--mg-space-2) var(--mg-space-4);
+  border-radius: var(--mg-radius-sm);
+  background: var(--mg-bg);
+  color: var(--mg-fg);
+
+  &:focus-visible {
+    inset-block-start: var(--mg-space-4);
+    z-index: 20;
+  }
+}
+
+.demo-content {
+  max-inline-size: 1400px;
+}
+
+.demo-huge {
+  font-size: clamp(4rem, 3rem + 6vw, 7rem);
+  font-weight: var(--mg-font-light);
+  line-height: 1;
+}
+
+.demo-big {
+  font-size: 2.5rem;
+  font-weight: var(--mg-font-light);
+  line-height: 1;
+}
+
+.demo-mid {
+  font-size: 1.25rem;
+  font-weight: var(--mg-font-light);
+}
+
+.demo-fill {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  border-radius: var(--mg-radius-sm);
+}
+
+.demo-photos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
+  gap: var(--mg-space-2);
+}
+
+.demo-photo {
+  inline-size: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: var(--mg-radius-md);
+}
+
+.demo-swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mg-tile-gap);
+  --mg-tile-unit: 76px;
+}
+
+/* The selected accent gets a ring, so the choice isn't colour-only. */
+.demo-swatch[aria-checked='true'] {
+  outline: 3px solid var(--mg-fg);
+  outline-offset: 3px;
+}

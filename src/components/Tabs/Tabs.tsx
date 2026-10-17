@@ -2,6 +2,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useId,
   useRef,
   useState,
@@ -26,6 +27,9 @@ interface TabsContextValue {
   activation: 'automatic' | 'manual';
   listRef: RefObject<HTMLDivElement | null>;
   select: (value: string) => void;
+  /** Values whose panel is currently in the DOM (aria-controls must not dangle). */
+  panels: ReadonlySet<string>;
+  setPanel: (value: string, present: boolean) => void;
 }
 
 const TabsContext = createContext<TabsContextValue | null>(null);
@@ -71,6 +75,16 @@ export function Tabs({
   const value = controlled ?? uncontrolled;
   const baseId = useId().replace(/[^a-zA-Z0-9_-]/g, '');
   const listRef = useRef<HTMLDivElement>(null);
+  const [panels, setPanels] = useState<ReadonlySet<string>>(() => new Set());
+  const setPanel = useCallback((panel: string, present: boolean) => {
+    setPanels((current) => {
+      if (current.has(panel) === present) return current;
+      const next = new Set(current);
+      if (present) next.add(panel);
+      else next.delete(panel);
+      return next;
+    });
+  }, []);
 
   const select = useCallback(
     (next: string) => {
@@ -89,7 +103,7 @@ export function Tabs({
   );
 
   return (
-    <TabsContext.Provider value={{ baseId, value, variant, activation, listRef, select }}>
+    <TabsContext.Provider value={{ baseId, value, variant, activation, listRef, select, panels, setPanel }}>
       <div className={cx('mg-tabs', className)} data-variant={variant} {...rest}>
         {children}
       </div>
@@ -149,7 +163,7 @@ export interface TabProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 
 }
 
 export function Tab({ value, className, children, onClick, ...rest }: TabProps) {
-  const { baseId, value: active, select } = useTabs('Tab');
+  const { baseId, value: active, select, panels } = useTabs('Tab');
   const selected = value === active;
   return (
     <button
@@ -157,7 +171,7 @@ export function Tab({ value, className, children, onClick, ...rest }: TabProps) 
       role="tab"
       id={idFor(baseId, 'tab', value)}
       aria-selected={selected}
-      aria-controls={idFor(baseId, 'panel', value)}
+      aria-controls={panels.has(value) ? idFor(baseId, 'panel', value) : undefined}
       tabIndex={selected ? 0 : -1}
       data-value={value}
       className={cx('mg-tab', 'mg-focusable', className)}
@@ -186,9 +200,15 @@ export interface TabPanelProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 export function TabPanel({ value, keepMounted = false, className, children, style, ...rest }: TabPanelProps) {
-  const { baseId, value: active, listRef, select } = useTabs('TabPanel');
+  const { baseId, value: active, listRef, select, setPanel } = useTabs('TabPanel');
   const ref = useRef<HTMLDivElement>(null);
   const selected = value === active;
+  const present = selected || keepMounted;
+
+  useEffect(() => {
+    setPanel(value, present);
+    return () => setPanel(value, false);
+  }, [setPanel, value, present]);
 
   const move = (delta: number) => {
     const tabs = [...(listRef.current?.querySelectorAll<HTMLButtonElement>('[role="tab"]:not(:disabled)') ?? [])];

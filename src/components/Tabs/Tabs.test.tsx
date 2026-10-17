@@ -88,6 +88,24 @@ describe('Tabs', () => {
     expect(screen.getByRole('tabpanel')).toHaveTextContent('All people');
   });
 
+  it('omits aria-controls when a tab has no panel in the DOM', () => {
+    render(
+      <Tabs defaultValue="light" variant="segmented">
+        <TabList aria-label="Theme">
+          <Tab value="light">Light</Tab>
+          <Tab value="dark">Dark</Tab>
+        </TabList>
+      </Tabs>,
+    );
+    for (const tab of screen.getAllByRole('tab')) expect(tab).not.toHaveAttribute('aria-controls');
+  });
+
+  it('only points inactive tabs at panels that are mounted', () => {
+    render(<Example />);
+    expect(screen.getByRole('tab', { name: 'All' })).toHaveAttribute('aria-controls');
+    expect(screen.getByRole('tab', { name: 'Recent' })).not.toHaveAttribute('aria-controls');
+  });
+
   it('has no axe violations', async () => {
     const { container } = render(<Example />);
     expect(await axeViolations(container)).toEqual([]);

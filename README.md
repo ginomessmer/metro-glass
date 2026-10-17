@@ -122,7 +122,7 @@ npm run build:site       # demo → site/, Storybook → site/storybook/
 
 ## Hosting (Cloudflare Workers)
 
-The demo and Storybook are served by an assets-only Worker ([`wrangler.jsonc`](wrangler.jsonc)):
+The demo and Storybook are served at **https://mg.oss.messmer.de.com** by the assets-only `metro-glass` Worker ([`wrangler.jsonc`](wrangler.jsonc)):
 
 | Path | Content |
 | --- | --- |

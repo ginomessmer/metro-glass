@@ -1,0 +1,12 @@
+/*
+ * Opt-in: cross-document (multi-page app) view transitions.
+ *
+ *   import 'metro-glass/navigation.css';
+ *
+ * Every same-origin navigation plays the Metro turnstile. Wrap the page area
+ * in <PageTransition> (or give it `view-transition-name: mg-page`).
+ */
+@view-transition {
+  navigation: auto;
+  types: turnstile;
+}

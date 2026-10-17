@@ -1,0 +1,155 @@
+@layer metro.components {
+  .mg-button {
+    --_h: 40px;
+    --_px: var(--mg-space-5);
+    --_fs: var(--mg-text-body);
+
+    /* Targeted resets: `all: unset` would also wipe the glass material. */
+    appearance: none;
+    border: 0;
+    margin: 0;
+    text-decoration: none;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--mg-space-2);
+    min-block-size: var(--_h);
+    min-inline-size: var(--_h);
+    padding-inline: var(--_px);
+    border-radius: var(--mg-radius-sm);
+    font: inherit;
+    font-size: var(--_fs);
+    font-weight: var(--mg-font-semibold);
+    line-height: 1.1;
+    color: var(--mg-fg);
+    cursor: pointer;
+    user-select: none;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    scale: 1;
+    transition:
+      scale var(--mg-duration-normal) var(--mg-ease-spring),
+      background-color var(--mg-duration-fast) linear,
+      color var(--mg-duration-fast) linear,
+      box-shadow var(--mg-duration-normal) var(--mg-ease-out);
+
+    &[data-size='sm'] {
+      --_h: 32px;
+      --_px: var(--mg-space-3);
+      --_fs: var(--mg-text-caption);
+    }
+    &[data-size='lg'] {
+      --_h: 52px;
+      --_px: var(--mg-space-6);
+      --_fs: 1.125rem;
+    }
+
+    /* Pointer / touch targets never drop under 44px (WCAG 2.5.5 / Apple HIG). */
+    @media (pointer: coarse) {
+      min-block-size: max(var(--_h), 44px);
+      min-inline-size: max(var(--_h), 44px);
+    }
+
+    &[data-shape='pill'] {
+      border-radius: var(--mg-radius-pill);
+    }
+    &[data-shape='circle'] {
+      /* Explicit size so stretch alignment in a flex column can't distort it. */
+      flex: none;
+      align-self: start;
+      inline-size: var(--_h);
+      block-size: var(--_h);
+      padding: 0;
+      border-radius: 50%;
+
+      @media (pointer: coarse) {
+        inline-size: max(var(--_h), 44px);
+        block-size: max(var(--_h), 44px);
+      }
+    }
+    &[data-block] {
+      display: flex;
+      inline-size: 100%;
+    }
+
+    &[data-pressed] {
+      scale: 0.96;
+      transition-duration: var(--mg-duration-fast);
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.45;
+    }
+
+    &[data-variant='glass'] {
+      --_fill: var(--mg-glass-fill);
+    }
+
+    &[data-variant='accent'] {
+      color: var(--mg-on-accent);
+    }
+
+    /* Metro's classic outlined button: flat, square, 2px border, inverts on press. */
+    &:not(.mg-glass) {
+      background: transparent;
+    }
+
+    &[data-variant='outline'] {
+      border: 2px solid currentColor;
+      border-radius: var(--mg-radius-sm);
+      background: transparent;
+
+      &[data-pressed] {
+        background: var(--mg-fg);
+        color: var(--mg-bg);
+      }
+    }
+
+    &[data-variant='subtle'] {
+      background: transparent;
+      color: var(--mg-accent-text);
+
+      @media (hover: hover) {
+        &:hover {
+          background: var(--mg-accent-soft);
+        }
+      }
+      &[data-pressed] {
+        background: var(--mg-accent-soft);
+      }
+    }
+
+    @media (hover: hover) {
+      &.mg-glass:hover:not(:disabled)::after {
+        opacity: 1;
+      }
+    }
+
+    /* Metro app-bar button: icon in a thin ring. */
+    &[data-shape='circle'][data-variant='outline'] {
+      border-radius: 50%;
+    }
+
+    @media (forced-colors: active) {
+      border: 1px solid ButtonText;
+      &:disabled {
+        color: GrayText;
+        border-color: GrayText;
+      }
+    }
+  }
+
+  .mg-button__icon {
+    display: inline-grid;
+    place-items: center;
+    font-size: 1.2em;
+    line-height: 1;
+
+    & > svg {
+      inline-size: 1em;
+      block-size: 1em;
+    }
+  }
+}

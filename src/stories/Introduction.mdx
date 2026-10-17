@@ -1,0 +1,37 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Introduction" />
+
+# metro glass
+
+Metro's typographic grid, live tiles and kinetic motion — rendered in Liquid Glass.
+
+| From **Metro** (Windows 8 / Phone) | From **Liquid Glass** |
+| --- | --- |
+| Tiles, groups, panorama, pivots | Blurred + saturated translucent material |
+| Light, lowercase, oversized type | Specular rim and pointer-following light |
+| Tilt-on-press, turnstile & continuum | Rounder, concentric corners (configurable) |
+| Bold accent colour system | Spring physics |
+
+## Getting started
+
+```tsx
+import { MetroProvider, Page, TileGrid, TileGroup, Tile } from 'metro-glass';
+import 'metro-glass/styles.css';
+
+export function App() {
+  return (
+    <MetroProvider accent="cobalt" shape="blend">
+      <Page>
+        <TileGrid aria-label="Start" semanticZoom>
+          <TileGroup title="Life at a glance">
+            <Tile title="Mail" badge={5} onClick={openMail} />
+          </TileGroup>
+        </TileGrid>
+      </Page>
+    </MetroProvider>
+  );
+}
+```
+
+Use the **Accent**, **Theme** and **Shape** toolbar controls to re-skin every story.

@@ -1,0 +1,259 @@
+@layer metro.components {
+  /* ── Page ──────────────────────────────────────────────────────────── */
+  .mg-page {
+    box-sizing: border-box;
+    min-block-size: 100dvh;
+    padding-block: max(var(--mg-space-6), env(safe-area-inset-top))
+      max(var(--mg-space-6), env(safe-area-inset-bottom));
+    padding-inline: max(var(--mg-page-gutter), env(safe-area-inset-left))
+      max(var(--mg-page-gutter), env(safe-area-inset-right));
+    color: var(--mg-fg);
+    background: var(--mg-bg);
+    font-family: var(--mg-font-family);
+
+    &[data-wallpaper] {
+      background: var(--mg-wallpaper);
+      background-attachment: fixed;
+    }
+  }
+
+  .mg-stack {
+    display: flex;
+    min-inline-size: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* ── TileGrid ──────────────────────────────────────────────────────── */
+  .mg-tile-grid {
+    container: mg-tile-grid / inline-size;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+    scroll-padding-inline: var(--mg-space-2);
+    /* Leave room for the press tilt and shadows so tiles aren't clipped. */
+    padding: var(--mg-space-2) var(--mg-space-2) var(--mg-space-5);
+    margin: calc(var(--mg-space-2) * -1);
+    scrollbar-width: thin;
+
+    &[data-semantic-zoom] {
+      touch-action: pan-x pan-y;
+    }
+
+    /* Semantic zoom: shrink every group with `zoom`, which reflows layout. */
+    &[data-zoomed] {
+      overflow: visible;
+
+      & .mg-tile-grid__groups {
+        flex-wrap: wrap;
+        gap: var(--mg-space-5);
+      }
+
+      & .mg-tile-group {
+        zoom: 0.42;
+        padding: var(--mg-space-5);
+        border-radius: var(--mg-radius-lg);
+        background: var(--mg-glass-fill);
+        backdrop-filter: blur(var(--mg-glass-blur));
+      }
+
+      & .mg-tile-group__title {
+        font-size: calc(var(--mg-text-header) * 2);
+      }
+    }
+
+    &[data-orientation='vertical'] {
+      overflow: visible;
+    }
+  }
+
+  .mg-tile-grid__groups {
+    display: flex;
+    gap: calc(var(--mg-tile-unit) * 0.75);
+    align-items: start;
+    inline-size: max-content;
+
+    .mg-tile-grid[data-orientation='vertical'] & {
+      flex-direction: column;
+      inline-size: auto;
+    }
+  }
+
+  /*
+   * Narrow containers (phones): stack the groups and size tiles so four units
+   * span the full width, like the Windows Phone start screen.
+   */
+  @container mg-tile-grid (max-width: 640px) {
+    .mg-tile-grid:not([data-orientation='horizontal']) .mg-tile-grid__groups {
+      flex-direction: column;
+      inline-size: auto;
+      gap: var(--mg-space-6);
+
+      & .mg-tile-group {
+        inline-size: 100%;
+      }
+
+      & .mg-tile-group__tiles {
+        --mg-tile-unit: calc((100cqi - 3 * var(--mg-tile-gap)) / 4);
+        grid-template-columns: repeat(4, var(--mg-tile-unit));
+      }
+    }
+  }
+
+  .mg-tile-group {
+    position: relative;
+    display: grid;
+    gap: var(--mg-space-3);
+    flex: none;
+    scroll-snap-align: start;
+  }
+
+  .mg-tile-group__title {
+    margin: 0;
+    font-size: var(--mg-text-section);
+    font-weight: var(--mg-font-light);
+    color: var(--mg-fg);
+    text-transform: lowercase;
+  }
+
+  .mg-tile-group__tiles {
+    display: grid;
+    grid-template-columns: repeat(var(--_cols, 6), var(--mg-tile-unit));
+    grid-auto-rows: var(--mg-tile-unit);
+    gap: var(--mg-tile-gap);
+
+    .mg-tile-group[data-dense] & {
+      grid-auto-flow: row dense;
+    }
+  }
+
+  .mg-tile-group__zoom {
+    all: unset;
+    position: absolute;
+    inset: 0;
+    border-radius: var(--mg-radius-lg);
+    cursor: zoom-in;
+
+    &:focus-visible {
+      box-shadow: var(--mg-focus-ring);
+    }
+  }
+
+  /* ── Hub / Panorama ───────────────────────────────────────────────── */
+  .mg-hub {
+    container: mg-hub / inline-size;
+    position: relative;
+    margin-inline: calc(var(--mg-page-gutter) * -1);
+  }
+
+  .mg-hub__scroller {
+    isolation: isolate;
+    position: relative;
+    display: grid;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--mg-page-gutter);
+    scrollbar-width: none;
+    padding-inline: var(--mg-page-gutter);
+    scroll-timeline: --mg-hub inline;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--mg-fg);
+      outline-offset: -4px;
+    }
+  }
+
+  .mg-hub__background {
+    position: absolute;
+    inset: 0 auto 0 0;
+    inline-size: 150%;
+    background: var(--_hub-image) left center / cover no-repeat;
+    opacity: 0.55;
+    mask: linear-gradient(to bottom, #000 30%, transparent);
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  .mg-hub__title {
+    margin: 0 0 var(--mg-space-4);
+    font-size: calc(var(--mg-text-display) * 1.15);
+    font-weight: var(--mg-font-light);
+    letter-spacing: -0.04em;
+    line-height: 1;
+    white-space: nowrap;
+    text-transform: lowercase;
+    color: var(--mg-fg);
+    pointer-events: none;
+  }
+
+  .mg-hub__sections {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: min(86cqi, 420px);
+    gap: var(--mg-space-7);
+    align-items: start;
+  }
+
+  .mg-hub-section {
+    scroll-snap-align: start;
+    display: grid;
+    align-content: start;
+    gap: var(--mg-space-4);
+    min-inline-size: 0;
+
+    &[data-width='wide'] {
+      @container mg-hub (min-width: 900px) {
+        grid-column: span 2;
+      }
+    }
+  }
+
+  .mg-hub-section__title {
+    margin: 0;
+    font-size: var(--mg-text-header);
+    font-weight: var(--mg-font-light);
+    letter-spacing: var(--mg-tracking-tight);
+    text-transform: lowercase;
+  }
+
+  /* Parallax: title and background move slower than the sections. */
+  @supports (animation-timeline: scroll()) {
+    .mg-hub__title,
+    .mg-hub__background {
+      animation: mg-hub-parallax linear both;
+      animation-timeline: --mg-hub;
+    }
+
+    .mg-hub__background {
+      animation-name: mg-hub-parallax-bg;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .mg-hub__title,
+      .mg-hub__background {
+        animation: none;
+      }
+    }
+  }
+
+  @keyframes mg-hub-parallax {
+    to {
+      /* Tune per hub with --mg-hub-parallax (how far the title lags behind). */
+      translate: var(--mg-hub-parallax, 60cqi) 0;
+    }
+  }
+
+  @keyframes mg-hub-parallax-bg {
+    to {
+      translate: calc(var(--mg-hub-parallax, 60cqi) * 1.4) 0;
+    }
+  }
+}

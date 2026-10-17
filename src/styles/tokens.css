@@ -1,0 +1,204 @@
+/*
+ * Metro Glass design tokens.
+ *
+ * Every token is a CSS custom property prefixed with `--mg-`. Override them on
+ * `:root`, on any subtree, or through <MetroProvider>. Derived colours are
+ * computed with relative colour syntax so changing `--mg-accent` alone
+ * re-tints the whole system.
+ */
+
+/* Registered properties can be transitioned / animated by the browser. */
+@property --mg-tilt-x {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@property --mg-tilt-y {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@property --mg-press {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 1;
+}
+
+@property --mg-light-x {
+  syntax: '<percentage>';
+  inherits: true;
+  initial-value: 30%;
+}
+
+@property --mg-light-y {
+  syntax: '<percentage>';
+  inherits: true;
+  initial-value: 0%;
+}
+
+/* Registered so `cqi`-based overrides resolve where they are declared. */
+@property --mg-tile-unit {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 80px;
+}
+
+@layer metro.tokens {
+  :root {
+    color-scheme: light dark;
+
+    /* ── Accent ────────────────────────────────────────────────────────── */
+    --mg-accent: #1ba1e2; /* Metro "cyan" */
+    --mg-contrast-threshold: 0.6;
+
+    /* ── Neutrals ──────────────────────────────────────────────────────── */
+    --mg-fg: light-dark(oklch(0.18 0 0), oklch(0.98 0 0));
+    --mg-fg-muted: light-dark(oklch(0.4 0 0), oklch(0.8 0 0));
+    --mg-fg-subtle: light-dark(oklch(0.52 0 0), oklch(0.68 0 0));
+    --mg-bg: light-dark(oklch(0.97 0.005 250), oklch(0.12 0.01 260));
+
+    /* ── Glass material ───────────────────────────────────────────────── */
+    --mg-glass-blur: 22px;
+    --mg-glass-saturate: 180%;
+    --mg-glass-fill: light-dark(oklch(1 0 0 / 0.42), oklch(0.25 0.01 260 / 0.38));
+    --mg-glass-fill-strong: light-dark(oklch(1 0 0 / 0.7), oklch(0.22 0.01 260 / 0.7));
+    --mg-glass-tint: 0.82; /* accent opacity of tinted glass; lower = glassier, less contrast */
+    --mg-glass-edge: light-dark(oklch(1 0 0 / 0.75), oklch(1 0 0 / 0.28));
+    --mg-glass-edge-low: light-dark(oklch(0 0 0 / 0.08), oklch(1 0 0 / 0.06));
+    --mg-glass-specular: oklch(1 0 0 / 0.45);
+    --mg-glass-shadow: 0 1px 1px oklch(0 0 0 / 0.06), 0 10px 30px -10px oklch(0 0 0 / 0.35);
+
+    /* ── Shape ────────────────────────────────────────────────────────── */
+    /* Metro is square; Liquid Glass is round. The blend sits in between. */
+    --mg-radius-sm: 6px;
+    --mg-radius-md: 10px;
+    --mg-radius-lg: 18px;
+    --mg-radius-pill: 999px;
+    --mg-border-width: 1px;
+
+    /* ── Typography ───────────────────────────────────────────────────── */
+    --mg-font-family: 'Segoe UI Variable Display', 'Segoe UI', 'SF Pro Display', system-ui,
+      -apple-system, 'Helvetica Neue', Arial, sans-serif;
+    --mg-font-light: 300;
+    --mg-font-regular: 400;
+    --mg-font-semibold: 600;
+    --mg-text-display: clamp(2.75rem, 1.6rem + 5vw, 5.5rem);
+    --mg-text-title: clamp(2rem, 1.4rem + 2.6vw, 3.25rem);
+    --mg-text-header: clamp(1.5rem, 1.2rem + 1.2vw, 2.125rem);
+    --mg-text-section: clamp(1.15rem, 1.05rem + 0.5vw, 1.375rem);
+    --mg-text-body: 1rem;
+    --mg-text-caption: 0.8125rem;
+    --mg-tracking-tight: -0.02em;
+
+    /* ── Space & grid ─────────────────────────────────────────────────── */
+    --mg-space-1: 4px;
+    --mg-space-2: 8px;
+    --mg-space-3: 12px;
+    --mg-space-4: 16px;
+    --mg-space-5: 24px;
+    --mg-space-6: 32px;
+    --mg-space-7: 48px;
+    --mg-space-8: 72px;
+    --mg-tile-unit: clamp(64px, 3.5vw + 48px, 104px);
+    --mg-tile-gap: 8px;
+    --mg-page-gutter: clamp(16px, 4vw, 56px);
+
+    /* ── Motion ───────────────────────────────────────────────────────── */
+    --mg-duration-fast: 120ms;
+    --mg-duration-normal: 260ms;
+    --mg-duration-slow: 520ms;
+    /* Metro's signature "exponential out" deceleration. */
+    --mg-ease-out: cubic-bezier(0.1, 0.9, 0.2, 1);
+    --mg-ease-in: cubic-bezier(0.7, 0, 1, 0.5);
+    --mg-ease-spring: linear(
+      0, 0.009, 0.035 2.1%, 0.141, 0.281 6.7%, 0.723 12.9%, 0.938 16.7%, 1.017, 1.077,
+      1.121, 1.149 24.3%, 1.159, 1.163, 1.161, 1.154 29.9%, 1.129 32.8%, 1.051 39.6%,
+      1.017 43.1%, 0.991, 0.977 51%, 0.974 53.8%, 0.975 57.1%, 0.997 69.8%, 1.003 76.9%, 1
+    );
+    --mg-tilt-max: 9deg;
+
+    /* ── Focus ────────────────────────────────────────────────────────── */
+    --mg-focus-ring: 0 0 0 2px var(--mg-bg), 0 0 0 4px var(--mg-fg);
+  }
+
+  /*
+   * Derived tokens. Custom properties resolve var() where they are declared,
+   * so anything computed from the accent is re-declared wherever the accent
+   * can change: providers (.mg-theme) and per-component overrides
+   * ([data-mg-accent]).
+   */
+  :root,
+  .mg-theme,
+  [data-mg-accent] {
+    --mg-accent-strong: oklch(from var(--mg-accent) calc(l - 0.08) c h);
+    --mg-accent-soft: oklch(from var(--mg-accent) l c h / 0.18);
+    /*
+     * Black or white, whichever has more contrast on the accent. In OKLCH the
+     * WCAG crossover sits around L≈0.6 (tune with --mg-contrast-threshold).
+     */
+    --mg-on-accent: oklch(
+      from var(--mg-accent) clamp(0, (var(--mg-contrast-threshold) - l) * 1000, 1) 0 0
+    );
+    --mg-accent-text: light-dark(
+      oklch(from var(--mg-accent) min(l, 0.5) c h),
+      oklch(from var(--mg-accent) max(l, 0.78) c h)
+    );
+    --mg-wallpaper: radial-gradient(
+        120% 90% at 0% 0%,
+        oklch(from var(--mg-accent) l c h / 0.55),
+        transparent 60%
+      ),
+      radial-gradient(
+        90% 80% at 100% 100%,
+        oklch(from var(--mg-accent) l c calc(h + 70) / 0.45),
+        transparent 60%
+      ),
+      radial-gradient(
+        70% 60% at 85% 10%,
+        oklch(from var(--mg-accent) l c calc(h - 60) / 0.35),
+        transparent 60%
+      ),
+      var(--mg-bg);
+  }
+
+  /* Explicit theme switches (set by <MetroProvider theme="…">). */
+  [data-mg-theme='light'] {
+    color-scheme: light;
+  }
+
+  [data-mg-theme='dark'] {
+    color-scheme: dark;
+  }
+
+  /* Users who ask for less transparency get solid surfaces. */
+  @media (prefers-reduced-transparency: reduce) {
+    :root {
+      --mg-glass-blur: 0px;
+      --mg-glass-fill: var(--mg-bg);
+      --mg-glass-fill-strong: var(--mg-bg);
+      --mg-glass-tint: 1;
+    }
+  }
+
+  @media (prefers-contrast: more) {
+    :root {
+      --mg-glass-tint: 1;
+      --mg-glass-fill: var(--mg-bg);
+      --mg-glass-edge: var(--mg-fg);
+      --mg-glass-edge-low: var(--mg-fg);
+      --mg-fg-muted: var(--mg-fg);
+      --mg-border-width: 2px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :root {
+      --mg-duration-fast: 0ms;
+      --mg-duration-normal: 0ms;
+      --mg-duration-slow: 0ms;
+      --mg-tilt-max: 0deg;
+    }
+  }
+}

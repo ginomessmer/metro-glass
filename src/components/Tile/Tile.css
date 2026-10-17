@@ -1,0 +1,188 @@
+@layer metro.components {
+  .mg-tile {
+    --_span-c: 2;
+    --_span-r: 2;
+    --_unit: var(--mg-tile-unit);
+    --_gap: var(--mg-tile-gap);
+
+    /* Targeted resets: `all: unset` would also wipe the glass material. */
+    appearance: none;
+    border: 0;
+    margin: 0;
+    font: inherit;
+    text-align: start;
+    box-sizing: border-box;
+    position: relative;
+    display: grid;
+    grid-template-rows: 1fr auto;
+    grid-column: span var(--_span-c);
+    grid-row: span var(--_span-r);
+    inline-size: calc(var(--_unit) * var(--_span-c) + var(--_gap) * (var(--_span-c) - 1));
+    block-size: calc(var(--_unit) * var(--_span-r) + var(--_gap) * (var(--_span-r) - 1));
+    padding: var(--mg-space-3);
+    border-radius: var(--mg-radius-md);
+    overflow: hidden;
+    container: mg-tile / size;
+    text-decoration: none;
+    cursor: default;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+
+    /* Press tilt (Metro) – variables are written by usePressTilt. */
+    transform: perspective(800px) rotateX(var(--mg-tilt-x)) rotateY(var(--mg-tilt-y))
+      scale(var(--mg-press));
+    transition:
+      --mg-tilt-x var(--mg-duration-normal) var(--mg-ease-out),
+      --mg-tilt-y var(--mg-duration-normal) var(--mg-ease-out),
+      --mg-press var(--mg-duration-normal) var(--mg-ease-out),
+      box-shadow var(--mg-duration-normal) var(--mg-ease-out),
+      opacity var(--mg-duration-slow) var(--mg-ease-out),
+      translate var(--mg-duration-slow) var(--mg-ease-out);
+
+    &[data-size='small'] {
+      --_span-c: 1;
+      --_span-r: 1;
+      padding: var(--mg-space-2);
+    }
+    &[data-size='wide'] {
+      --_span-c: 4;
+    }
+    &[data-size='large'] {
+      --_span-c: 4;
+      --_span-r: 4;
+    }
+
+    &:not([data-tint]) {
+      color: var(--mg-fg);
+    }
+
+    &:is(a, button) {
+      cursor: pointer;
+    }
+
+    /* Liquid Glass hover lift: brighter light, a touch more depth. */
+    @media (hover: hover) {
+      &:is(a, button):hover::after {
+        opacity: 0.9;
+      }
+    }
+
+    &[data-pressed] {
+      transition-duration: var(--mg-duration-fast);
+    }
+
+    /* Inside a grid the tile fills its cells instead of sizing itself. */
+    .mg-tile-grid & {
+      inline-size: auto;
+      block-size: auto;
+    }
+
+    /* Entry animation, no JS required. */
+    @starting-style {
+      opacity: 0;
+      translate: 0 12px;
+    }
+  }
+
+  .mg-tile__image {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    background: var(--_tile-image) center / cover no-repeat;
+
+    /* Keep the footer legible over photos. */
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, oklch(0 0 0 / 0.55), transparent 50%);
+    }
+
+    & ~ .mg-tile__footer {
+      color: white;
+    }
+  }
+
+  .mg-tile__faces {
+    position: relative;
+    display: grid;
+    min-block-size: 0;
+    overflow: hidden;
+  }
+
+  .mg-tile__face {
+    display: grid;
+    align-content: start;
+    gap: var(--mg-space-1);
+    min-block-size: 0;
+    font-size: var(--mg-text-body);
+    line-height: 1.3;
+    transform-origin: 50% 50%;
+    backface-visibility: hidden;
+  }
+
+  .mg-tile__icon {
+    display: grid;
+    place-items: center;
+    place-self: center;
+    font-size: calc(var(--_unit) * 0.5);
+    line-height: 1;
+
+    & > svg {
+      inline-size: 1em;
+      block-size: 1em;
+    }
+
+    .mg-tile[data-size='small'] & {
+      font-size: calc(var(--_unit) * 0.42);
+    }
+  }
+
+  .mg-tile__footer {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: var(--mg-space-2);
+    min-inline-size: 0;
+  }
+
+  .mg-tile__title {
+    font-size: var(--mg-text-caption);
+    font-weight: var(--mg-font-regular);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .mg-tile__badge {
+    font-size: 1.25rem;
+    font-weight: var(--mg-font-light);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Small tiles have no room for text: keep the label for screen readers only. */
+  @container mg-tile (max-inline-size: 110px) {
+    .mg-tile__title {
+      position: absolute;
+      inline-size: 1px;
+      block-size: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+    }
+    .mg-tile__badge {
+      position: absolute;
+      inset-block-start: var(--mg-space-1);
+      inset-inline-end: var(--mg-space-2);
+      font-size: 0.9rem;
+    }
+  }
+
+  /* Large tiles get bigger type on their faces. */
+  @container mg-tile (min-inline-size: 320px) and (min-block-size: 300px) {
+    .mg-tile__face {
+      font-size: var(--mg-text-section);
+    }
+  }
+}

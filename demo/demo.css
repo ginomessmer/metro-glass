@@ -1,0 +1,87 @@
+/* Demo-only styles. Unlayered, so they win over the library's layers. */
+html,
+body {
+  margin: 0;
+}
+
+.demo-root {
+  min-block-size: 100dvh;
+}
+
+.demo-logo {
+  border-radius: 4px;
+  background:
+    linear-gradient(var(--mg-accent) 0 0) 0 0 / 46% 46% no-repeat,
+    linear-gradient(oklch(from var(--mg-accent) l c calc(h + 60)) 0 0) 100% 0 / 46% 46% no-repeat,
+    linear-gradient(oklch(from var(--mg-accent) l c calc(h - 60)) 0 0) 0 100% / 46% 46% no-repeat,
+    linear-gradient(oklch(from var(--mg-accent) l c calc(h + 120)) 0 0) 100% 100% / 46% 46% no-repeat;
+}
+
+.demo-skip {
+  position: absolute;
+  inset-inline-start: var(--mg-space-4);
+  inset-block-start: -100px;
+  padding: var(--mg-space-2) var(--mg-space-4);
+  border-radius: var(--mg-radius-sm);
+  background: var(--mg-bg);
+  color: var(--mg-fg);
+
+  &:focus-visible {
+    inset-block-start: var(--mg-space-4);
+    z-index: 20;
+  }
+}
+
+.demo-content {
+  max-inline-size: 1400px;
+}
+
+.demo-huge {
+  font-size: clamp(4rem, 3rem + 6vw, 7rem);
+  font-weight: var(--mg-font-light);
+  line-height: 1;
+}
+
+.demo-big {
+  font-size: 2.5rem;
+  font-weight: var(--mg-font-light);
+  line-height: 1;
+}
+
+.demo-mid {
+  font-size: 1.25rem;
+  font-weight: var(--mg-font-light);
+}
+
+.demo-fill {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  border-radius: var(--mg-radius-sm);
+}
+
+.demo-photos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
+  gap: var(--mg-space-2);
+}
+
+.demo-photo {
+  inline-size: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: var(--mg-radius-md);
+}
+
+.demo-swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mg-tile-gap);
+  --mg-tile-unit: 76px;
+}
+
+/* The selected accent gets a ring, so the choice isn't colour-only. */
+.demo-swatch[aria-checked='true'] {
+  outline: 3px solid var(--mg-fg);
+  outline-offset: 3px;
+}

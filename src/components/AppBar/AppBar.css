@@ -1,0 +1,166 @@
+/* 0 = floating pill, 1 = docked into the top edge. Registered so it animates. */
+@property --mg-appbar-progress {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+
+@layer metro.components {
+  .mg-appbar {
+    --_p: var(--mg-appbar-progress);
+    --_h: 52px;
+    --_gutter: var(--mg-page-gutter);
+    --_pad: var(--mg-space-2);
+    --mg-appbar-morph-distance: 96px;
+
+    container: mg-appbar / inline-size;
+    position: sticky;
+    inset-block-start: calc(var(--mg-space-3) * (1 - var(--_p)));
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: var(--mg-space-3);
+    box-sizing: border-box;
+    min-block-size: calc(var(--_h) + env(safe-area-inset-top, 0px) * var(--_p));
+    margin-block-end: var(--mg-space-6);
+    /* Grow to the viewport edges while the content stays where it was. */
+    margin-inline: calc(var(--_gutter) * -1 * var(--_p));
+    padding-block-start: calc(env(safe-area-inset-top, 0px) * var(--_p));
+    padding-inline: calc(var(--_pad) + var(--_gutter) * var(--_p));
+    border-radius: calc(var(--_h) / 2 * (1 - var(--_p)));
+    view-transition-name: mg-appbar;
+
+    /* Glass gets denser and blurrier as it docks, so content scrolling underneath recedes. */
+    backdrop-filter: blur(calc(var(--mg-glass-blur) * (1 + var(--_p))))
+      saturate(var(--mg-glass-saturate));
+    --_fill: color-mix(
+      in oklch,
+      var(--mg-glass-fill-strong) calc(var(--_p) * 100%),
+      var(--mg-glass-fill)
+    );
+    box-shadow:
+      inset 0 -1px 0 oklch(from var(--mg-glass-edge-low) l c h / calc(alpha * (0.5 + var(--_p)))),
+      0 calc(12px * (1 - var(--_p)) + 2px) calc(30px - 18px * var(--_p)) -10px oklch(0 0 0 / 0.3);
+
+    /* The specular rim belongs to the floating pill; it fades out as the bar docks. */
+    &::before {
+      opacity: calc(1 - var(--_p));
+    }
+
+    &[data-morph] {
+      animation: mg-appbar-dock linear both;
+      animation-timeline: scroll(root block);
+      animation-range: 0 var(--mg-appbar-morph-distance);
+    }
+  }
+
+  @keyframes mg-appbar-dock {
+    from {
+      --mg-appbar-progress: 0;
+    }
+    to {
+      --mg-appbar-progress: 1;
+    }
+  }
+
+  .mg-appbar__brand {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--mg-space-2);
+    flex: none;
+    min-block-size: 40px;
+    padding-inline: var(--mg-space-2);
+    border-radius: var(--mg-radius-pill);
+    color: var(--mg-fg);
+    font-size: 1.25rem;
+    font-weight: var(--mg-font-light);
+    letter-spacing: var(--mg-tracking-tight);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .mg-appbar__logo {
+    display: inline-grid;
+    place-items: center;
+    inline-size: 24px;
+    block-size: 24px;
+
+    & > * {
+      inline-size: 100%;
+      block-size: 100%;
+    }
+  }
+
+  .mg-appbar__nav {
+    margin-inline-start: auto;
+    min-inline-size: 0;
+  }
+
+  .mg-appbar__list {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .mg-appbar__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--mg-space-1);
+  }
+
+  /* Higher specificity than .mg-link: app bar items are pills, not underlined links. */
+  .mg-link.mg-appbar__item {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: 36px;
+    padding-inline: var(--mg-space-3);
+    border-radius: var(--mg-radius-pill);
+    color: var(--mg-fg-muted);
+    font-size: 0.9375rem;
+    font-weight: var(--mg-font-semibold);
+    text-decoration: none;
+    white-space: nowrap;
+    transition:
+      background-color var(--mg-duration-fast) linear,
+      color var(--mg-duration-fast) linear;
+
+    &:hover {
+      color: var(--mg-fg);
+      background: oklch(from var(--mg-fg) l c h / 0.08);
+    }
+
+    &[aria-current='page'] {
+      color: var(--mg-accent-text);
+      background: var(--mg-accent-soft);
+    }
+
+    @media (pointer: coarse) {
+      min-block-size: 44px;
+    }
+  }
+
+  /* Narrow bars: keep the logo, hide the wordmark (still the link's accessible name). */
+  @container mg-appbar (max-width: 440px) {
+    .mg-appbar__name {
+      position: absolute;
+      inline-size: 1px;
+      block-size: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+
+    .mg-link.mg-appbar__item {
+      padding-inline: var(--mg-space-2);
+    }
+  }
+
+  @media (forced-colors: active) {
+    .mg-link.mg-appbar__item[aria-current='page'] {
+      outline: 2px solid Highlight;
+    }
+  }
+}

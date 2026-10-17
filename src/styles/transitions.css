@@ -1,0 +1,141 @@
+/*
+ * View Transition choreography.
+ *
+ * Types are matched both with `:active-view-transition-type()` (native) and
+ * with `html[data-mg-transition]`, which startViewTransition() sets for
+ * engines that support view transitions but not types. `:is()` is forgiving,
+ * so an engine that doesn't know the pseudo-class still uses the attribute.
+ */
+@layer metro.transitions {
+  ::view-transition-group(*) {
+    animation-duration: var(--mg-duration-slow);
+    animation-timing-function: var(--mg-ease-out);
+  }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: var(--mg-duration-normal);
+  }
+
+  /* ── Turnstile: the page swings on its left edge like a door ──────── */
+  html:is(:active-view-transition-type(turnstile), [data-mg-transition~='turnstile']) {
+    &::view-transition-old(mg-page) {
+      transform-origin: left center;
+      animation: mg-turnstile-out var(--mg-duration-normal) var(--mg-ease-in) both;
+    }
+    &::view-transition-new(mg-page) {
+      transform-origin: left center;
+      animation: mg-turnstile-in var(--mg-duration-slow) var(--mg-ease-out)
+        var(--mg-duration-normal) both;
+    }
+  }
+
+  /* ── Continuum: shared elements morph, everything else lifts away ─── */
+  html:is(:active-view-transition-type(continuum), [data-mg-transition~='continuum']) {
+    &::view-transition-old(mg-page) {
+      animation: mg-lift-out var(--mg-duration-normal) var(--mg-ease-in) both;
+    }
+    &::view-transition-new(mg-page) {
+      animation: mg-lift-in var(--mg-duration-slow) var(--mg-ease-out)
+        var(--mg-duration-fast) both;
+    }
+    /* Shared elements (Tile/Heading `transitionName`) glide on a spring. */
+    &::view-transition-group(*) {
+      animation-timing-function: var(--mg-ease-spring);
+    }
+  }
+
+  /* ── Slide: pivots / forward navigation ───────────────────────────── */
+  html:is(:active-view-transition-type(slide), [data-mg-transition~='slide']) {
+    &::view-transition-old(mg-page),
+    &::view-transition-old(.mg-tabpanel) {
+      animation: mg-slide-out-left var(--mg-duration-normal) var(--mg-ease-in) both;
+    }
+    &::view-transition-new(mg-page),
+    &::view-transition-new(.mg-tabpanel) {
+      animation: mg-slide-in-right var(--mg-duration-slow) var(--mg-ease-out) both;
+    }
+  }
+
+  html:is(:active-view-transition-type(slide-back), [data-mg-transition~='slide-back']) {
+    &::view-transition-old(mg-page),
+    &::view-transition-old(.mg-tabpanel) {
+      animation: mg-slide-out-right var(--mg-duration-normal) var(--mg-ease-in) both;
+    }
+    &::view-transition-new(mg-page),
+    &::view-transition-new(.mg-tabpanel) {
+      animation: mg-slide-in-left var(--mg-duration-slow) var(--mg-ease-out) both;
+    }
+  }
+
+  /* The pivot indicator glides with a little spring. */
+  ::view-transition-group(.mg-tab-indicator) {
+    animation-duration: var(--mg-duration-slow);
+    animation-timing-function: var(--mg-ease-spring);
+  }
+
+  /* Panels change size between tabs; don't stretch their snapshots. */
+  ::view-transition-old(.mg-tabpanel),
+  ::view-transition-new(.mg-tabpanel) {
+    block-size: 100%;
+    object-fit: none;
+    object-position: top left;
+  }
+
+  @keyframes mg-turnstile-out {
+    to {
+      transform: perspective(1400px) rotateY(80deg);
+      opacity: 0;
+    }
+  }
+  @keyframes mg-turnstile-in {
+    from {
+      transform: perspective(1400px) rotateY(-80deg);
+      opacity: 0;
+    }
+  }
+  @keyframes mg-lift-out {
+    to {
+      translate: 0 -24px;
+      opacity: 0;
+    }
+  }
+  @keyframes mg-lift-in {
+    from {
+      translate: 0 48px;
+      opacity: 0;
+    }
+  }
+  @keyframes mg-slide-out-left {
+    to {
+      translate: -60px 0;
+      opacity: 0;
+    }
+  }
+  @keyframes mg-slide-in-right {
+    from {
+      translate: 120px 0;
+      opacity: 0;
+    }
+  }
+  @keyframes mg-slide-out-right {
+    to {
+      translate: 60px 0;
+      opacity: 0;
+    }
+  }
+  @keyframes mg-slide-in-left {
+    from {
+      translate: -120px 0;
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    ::view-transition-group(*),
+    ::view-transition-old(*),
+    ::view-transition-new(*) {
+      animation: none !important;
+    }
+  }
+}

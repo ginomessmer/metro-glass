@@ -1,0 +1,66 @@
+@layer metro.components {
+  .mg-link {
+    display: inline;
+    border-radius: 2px;
+    color: var(--mg-accent-text);
+    text-decoration-line: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+    text-decoration-color: color-mix(in oklch, currentColor 40%, transparent);
+    cursor: pointer;
+    transition:
+      text-decoration-color var(--mg-duration-fast) linear,
+      color var(--mg-duration-fast) linear;
+
+    &:hover {
+      text-decoration-color: currentColor;
+    }
+
+    &[data-variant='standalone'] {
+      font-weight: var(--mg-font-semibold);
+      text-decoration-color: transparent;
+      &:hover {
+        text-decoration-color: currentColor;
+      }
+    }
+
+    &[data-variant='nav'] {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--mg-space-2);
+      padding-block: var(--mg-space-1);
+      font-size: var(--mg-text-header);
+      font-weight: var(--mg-font-light);
+      color: var(--mg-fg);
+      text-decoration: none;
+
+      & .mg-link__glyph {
+        inline-size: 0.6em;
+        block-size: 0.6em;
+        color: var(--mg-accent-text);
+        transition: translate var(--mg-duration-normal) var(--mg-ease-spring);
+      }
+      &:hover .mg-link__glyph {
+        translate: 4px 0;
+      }
+      &:active {
+        color: var(--mg-accent-text);
+      }
+    }
+
+    &:visited {
+      color: var(--mg-accent-text);
+    }
+    &[data-variant='nav']:visited {
+      color: var(--mg-fg);
+    }
+  }
+
+  .mg-link__glyph {
+    display: inline-block;
+    inline-size: 0.75em;
+    block-size: 0.75em;
+    margin-inline-start: 0.2em;
+    vertical-align: -0.05em;
+  }
+}

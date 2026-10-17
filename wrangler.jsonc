@@ -1,0 +1,16 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // Assets-only Worker: serves the demo SPA at / and Storybook at /storybook/.
+  "name": "metro-glass",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./site",
+    // Client-side routes (/hub, /apps/mail, …) fall back to index.html.
+    "not_found_handling": "single-page-application",
+    "html_handling": "auto-trailing-slash"
+  },
+  "routes": [{ "pattern": "mg.oss.messmer.de.com", "custom_domain": true }],
+  "workers_dev": true,
+  "preview_urls": true,
+  "observability": { "enabled": true }
+}

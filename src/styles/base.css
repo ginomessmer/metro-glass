@@ -1,0 +1,113 @@
+/*
+ * Base layer: the glass material, focus treatment and shared primitives that
+ * every component builds on.
+ */
+@layer metro.base {
+  .mg-theme {
+    font-family: var(--mg-font-family);
+    color: var(--mg-fg);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /*
+   * The glass material. Liquid Glass reads as glass because of three things:
+   * a blurred + saturated backdrop, a bright specular rim, and a soft light
+   * that follows the pointer. Metro contributes the flat, confident tint.
+   */
+  .mg-glass {
+    --_fill: var(--mg-glass-fill);
+    position: relative;
+    isolation: isolate;
+    background: var(--_fill);
+    backdrop-filter: blur(var(--mg-glass-blur)) saturate(var(--mg-glass-saturate));
+    box-shadow:
+      inset 0 0 0 var(--mg-border-width) var(--mg-glass-edge-low),
+      var(--mg-glass-shadow);
+
+    /* Specular rim: a gradient border painted with a mask. */
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      border-radius: inherit;
+      padding: var(--mg-border-width);
+      background: linear-gradient(
+        160deg,
+        var(--mg-glass-edge) 0%,
+        transparent 38%,
+        transparent 62%,
+        oklch(from var(--mg-glass-edge) l c h / calc(alpha * 0.6)) 100%
+      );
+      mask:
+        linear-gradient(#000 0 0) content-box exclude,
+        linear-gradient(#000 0 0);
+      pointer-events: none;
+    }
+
+    /* Pointer-following light. --mg-light-x/y are set by usePointerLight. */
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      border-radius: inherit;
+      background: radial-gradient(
+        120% 90% at var(--mg-light-x) var(--mg-light-y),
+        var(--mg-glass-specular),
+        transparent 55%
+      );
+      opacity: 0.5;
+      mix-blend-mode: soft-light;
+      pointer-events: none;
+      transition:
+        --mg-light-x var(--mg-duration-slow) var(--mg-ease-out),
+        --mg-light-y var(--mg-duration-slow) var(--mg-ease-out),
+        opacity var(--mg-duration-normal) var(--mg-ease-out);
+    }
+  }
+
+  /* Accent-tinted glass (tiles, accent buttons). */
+  .mg-glass[data-tint='accent'] {
+    --_fill: oklch(from var(--mg-accent) l c h / var(--mg-glass-tint));
+    color: var(--mg-on-accent);
+  }
+
+  .mg-focusable:focus-visible {
+    outline: none;
+    box-shadow: var(--mg-focus-ring);
+  }
+
+  .mg-visually-hidden {
+    position: absolute !important;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* Windows High Contrast / forced colours: drop the material, keep structure. */
+  @media (forced-colors: active) {
+    .mg-glass {
+      backdrop-filter: none;
+      background: Canvas;
+      color: CanvasText;
+      border: 1px solid CanvasText;
+
+      &::before,
+      &::after {
+        display: none;
+      }
+    }
+
+    .mg-focusable:focus-visible {
+      outline: 2px solid Highlight;
+      outline-offset: 2px;
+    }
+  }
+}

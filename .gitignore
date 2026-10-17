@@ -147,3 +147,9 @@ vite.config.ts.timestamp-*
 
 # Turbo Repo
 .turbo
+
+# metro-glass
+storybook-static
+*.tsbuildinfo
+site
+.wrangler

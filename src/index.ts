@@ -7,6 +7,7 @@ export * from './components/Link';
 export * from './components/Tabs';
 export * from './components/Layout';
 export * from './components/PageTransition';
+export * from './components/AppBar';
 
 export { MetroProvider, useMetro } from './tokens/MetroProvider';
 export type { MetroProviderProps, MetroTheme } from './tokens/MetroProvider';

@@ -31,6 +31,7 @@ import 'metro-glass/styles.css';
 | `Button` | accent / glass / outline / subtle; rect / pill / circle (Metro app bar) |
 | `Heading`, `Subheading` | semantic level decoupled from visual size; Metro lowercase; caps eyebrow |
 | `Tabs` (`TabList`, `Tab`, `TabPanel`) | Metro pivot or glass segmented control; WAI-ARIA tabs; swipe; animated indicator |
+| `AppBar`, `AppBarBrand`, `AppBarItem` | sticky glass bar; floating pill that docks into the top edge on scroll (CSS scroll-driven animation, JS fallback); wordmark collapses on narrow bars; `aria-current` items |
 | `Link` | inline / standalone / nav; external links; `onNavigate` for client-side routing inside a view transition |
 | `Page`, `Stack`, `TileGrid`, `TileGroup`, `Hub`, `HubSection` | page surface, flex stack, start screen with semantic zoom, panorama with scroll-driven parallax |
 | `PageTransition` + `useViewTransition` | turnstile, continuum, slide, fade, shared-element morphs |

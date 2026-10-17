@@ -8,41 +8,7 @@ body {
   min-block-size: 100dvh;
 }
 
-.demo-bar {
-  position: sticky;
-  inset-block-start: var(--mg-space-3);
-  z-index: 10;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--mg-space-3);
-  margin-block-end: var(--mg-space-6);
-  padding: var(--mg-space-2) var(--mg-space-4);
-  border-radius: var(--mg-radius-pill);
-  view-transition-name: demo-bar;
-
-  & ul {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-}
-
-.demo-brand {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--mg-space-2);
-  border-radius: var(--mg-radius-sm);
-  color: var(--mg-fg);
-  font-size: 1.25rem;
-  font-weight: var(--mg-font-light);
-  text-decoration: none;
-}
-
 .demo-logo {
-  inline-size: 22px;
-  block-size: 22px;
   border-radius: 4px;
   background:
     linear-gradient(var(--mg-accent) 0 0) 0 0 / 46% 46% no-repeat,

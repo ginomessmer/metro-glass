@@ -1,4 +1,7 @@
 import {
+  AppBar,
+  AppBarBrand,
+  AppBarItem,
   Button,
   Heading,
   Hub,
@@ -70,19 +73,19 @@ export function App() {
     <MetroProvider accent={settings.accent} theme={settings.theme} shape={settings.shape} className="demo-root">
       <Page>
         <a className="demo-skip mg-focusable" href="#content">Skip to content</a>
-        <header className="demo-bar mg-glass">
-          <a className="demo-brand mg-focusable" href="/" onClick={intercept('/', 'slide-back')}>
-            <span className="demo-logo" aria-hidden="true" />
-            metro glass
-          </a>
-          <nav aria-label="Main">
-            <Stack as="ul" direction="row" gap={4} align="center">
-              <li><Link variant="standalone" href="/hub" onNavigate={() => navigate('/hub', 'slide')}>Hub</Link></li>
-              <li><Link variant="standalone" href="/settings" onNavigate={() => navigate('/settings', 'turnstile')}>Personalise</Link></li>
-              <li><Link variant="standalone" href="/storybook/">Storybook</Link></li>
-            </Stack>
-          </nav>
-        </header>
+        <AppBar
+          brand={
+            <AppBarBrand href="/" logo={<span className="demo-logo" />} onClick={intercept('/', 'slide-back')}>
+              metro glass
+            </AppBarBrand>
+          }
+        >
+          <AppBarItem href="/hub" current={path === '/hub'} onNavigate={() => navigate('/hub', 'slide')}>Hub</AppBarItem>
+          <AppBarItem href="/settings" current={path === '/settings'} onNavigate={() => navigate('/settings', 'turnstile')}>
+            Personalise
+          </AppBarItem>
+          <AppBarItem href="/storybook/">Storybook</AppBarItem>
+        </AppBar>
         <PageTransition id="content" className="demo-content">
           {page}
         </PageTransition>

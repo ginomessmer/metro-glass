@@ -32,10 +32,14 @@
     /* Press tilt (Metro) – variables are written by usePressTilt. */
     transform: perspective(800px) rotateX(var(--mg-tilt-x)) rotateY(var(--mg-tilt-y))
       scale(var(--mg-press));
+    /*
+     * Transition `transform` itself, not the registered tilt and press
+     * properties: those run on the main thread (a style recalc + repaint of the
+     * backdrop-filter per frame, which janks on iOS), while a transform
+     * transition stays on the compositor.
+     */
     transition:
-      --mg-tilt-x var(--mg-duration-normal) var(--mg-ease-out),
-      --mg-tilt-y var(--mg-duration-normal) var(--mg-ease-out),
-      --mg-press var(--mg-duration-normal) var(--mg-ease-out),
+      transform var(--mg-duration-normal) var(--mg-ease-out),
       box-shadow var(--mg-duration-normal) var(--mg-ease-out),
       opacity var(--mg-duration-slow) var(--mg-ease-out),
       translate var(--mg-duration-slow) var(--mg-ease-out);

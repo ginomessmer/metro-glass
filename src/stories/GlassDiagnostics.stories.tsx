@@ -7,6 +7,7 @@ import { Stack } from '../components/Layout/Stack';
 import { PageTransition } from '../components/PageTransition/PageTransition';
 import { Tile } from '../components/Tile/Tile';
 import { Heading, Subheading } from '../components/Typography/Heading';
+import { useViewTransition, type MetroTransitionType } from '../hooks/useViewTransition';
 import { metroAccents, type MetroAccentName } from '../tokens/tokens';
 
 const meta = {
@@ -35,6 +36,7 @@ interface Toggles {
   tilt: boolean;
   isolation: boolean;
   pageName: boolean;
+  barName: boolean;
   morph: boolean;
 }
 
@@ -46,6 +48,7 @@ const togglesInit: Toggles = {
   tilt: true,
   isolation: true,
   pageName: true,
+  barName: true,
   morph: true,
 };
 
@@ -57,11 +60,13 @@ const toggleLabels: Record<keyof Toggles, string> = {
   tilt: '3D perspective transform on tiles',
   isolation: 'isolation: isolate on glass',
   pageName: 'view-transition-name on page content',
+  barName: 'view-transition-name on AppBar',
   morph: 'AppBar scroll-driven morph',
 };
 
 const counts = [8, 24, 48] as const;
 const wallpapers: Wallpaper[] = ['fixed', 'scroll', 'layer'];
+const swaps: Array<MetroTransitionType | 'instant'> = ['turnstile', 'slide', 'continuum', 'fade', 'instant'];
 const accents = Object.keys(metroAccents) as MetroAccentName[];
 
 /* Each rule undoes one ingredient of the glass material; unlayered, so it wins. */
@@ -73,6 +78,7 @@ const overrides = `
 .mg-diag[data-off~='contain'] .mg-tile { container: none; }
 .mg-diag[data-off~='tilt'] .mg-tile { transform: none; transition: none; }
 .mg-diag[data-off~='isolation'] .mg-glass { isolation: auto; }
+.mg-diag[data-off~='barName'] .mg-appbar { view-transition-name: none; }
 .mg-diag[data-wallpaper-mode='scroll'] .mg-page { background-attachment: scroll; }
 .mg-diag[data-wallpaper-mode='layer'] .mg-page { background: var(--mg-bg); isolation: isolate; }
 .mg-diag__wall { position: fixed; inset: 0; z-index: -1; background: var(--mg-wallpaper); pointer-events: none; }
@@ -83,6 +89,14 @@ export const Bisect: Story = {
     const [toggles, setToggles] = useState<Toggles>(togglesInit);
     const [count, setCount] = useState<(typeof counts)[number]>(24);
     const [wallpaper, setWallpaper] = useState<Wallpaper>('fixed');
+    const [page, setPage] = useState(0);
+    const transition = useViewTransition();
+
+    const swap = (type: MetroTransitionType | 'instant') => {
+      const update = () => setPage((current) => current + 1);
+      if (type === 'instant') update();
+      else transition(update, { types: [type] });
+    };
 
     const off = (Object.keys(toggles) as Array<keyof Toggles>).filter((key) => !toggles[key]);
     const flip = (key: keyof Toggles) => setToggles((current) => ({ ...current, [key]: !current[key] }));
@@ -126,9 +140,20 @@ export const Bisect: Story = {
           <code style={{ fontSize: 12 }}>{summary}</code>
         </Stack>
 
+        <Stack gap={2}>
+          <Subheading as="p">Swap the page below, like navigating in the demo:</Subheading>
+          <Stack direction="row" gap={2} wrap role="group" aria-label="Swap page">
+            {swaps.map((type) => (
+              <Button key={type} variant="accent" onClick={() => swap(type)}>
+                swap: {type}
+              </Button>
+            ))}
+          </Stack>
+        </Stack>
+
         <Stack direction="row" gap={2} wrap style={{ ['--mg-tile-unit' as string]: '76px' }}>
           {Array.from({ length: count }, (_, i) => {
-            const name = accents[i % accents.length];
+            const name = accents[(i + page) % accents.length];
             return <Tile key={i} size="small" accent={name} title={name} onClick={() => {}} />;
           })}
         </Stack>

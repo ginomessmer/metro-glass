@@ -13,6 +13,7 @@ import {
   type ReactNode,
   type RefObject,
 } from 'react';
+import { flushSync } from 'react-dom';
 import { useSwipe } from '../../hooks/useSwipe';
 import { startViewTransition } from '../../hooks/useViewTransition';
 import { cx } from '../../utils/cx';
@@ -27,6 +28,13 @@ interface TabsContextValue {
   activation: 'automatic' | 'manual';
   listRef: RefObject<HTMLDivElement | null>;
   select: (value: string) => void;
+  /**
+   * True only while these tabs run their own selection transition. The
+   * indicator and panel are named for view transitions just for that window:
+   * a permanent name would turn them into stray transition groups (floating
+   * over the old page) during unrelated page navigations.
+   */
+  transitioning: boolean;
   /** Values whose panel is currently in the DOM (aria-controls must not dangle). */
   panels: ReadonlySet<string>;
   setPanel: (value: string, present: boolean) => void;
@@ -75,6 +83,7 @@ export function Tabs({
   const value = controlled ?? uncontrolled;
   const baseId = useId().replace(/[^a-zA-Z0-9_-]/g, '');
   const listRef = useRef<HTMLDivElement>(null);
+  const [transitioning, setTransitioning] = useState(false);
   const [panels, setPanels] = useState<ReadonlySet<string>>(() => new Set());
   const setPanel = useCallback((panel: string, present: boolean) => {
     setPanels((current) => {
@@ -97,13 +106,19 @@ export function Tabs({
         onValueChange?.(next);
       };
       if (!animated) return commit();
-      void startViewTransition(commit, { types: [to >= from ? 'slide' : 'slide-back'] });
+      // Apply the names before the old state is captured.
+      flushSync(() => setTransitioning(true));
+      void startViewTransition(commit, { types: [to >= from ? 'slide' : 'slide-back'] }).finally(() =>
+        setTransitioning(false),
+      );
     },
     [value, controlled, onValueChange, animated],
   );
 
   return (
-    <TabsContext.Provider value={{ baseId, value, variant, activation, listRef, select, panels, setPanel }}>
+    <TabsContext.Provider
+      value={{ baseId, value, variant, activation, listRef, select, transitioning, panels, setPanel }}
+    >
       <div className={cx('mg-tabs', className)} data-variant={variant} {...rest}>
         {children}
       </div>
@@ -163,7 +178,7 @@ export interface TabProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 
 }
 
 export function Tab({ value, className, children, onClick, ...rest }: TabProps) {
-  const { baseId, value: active, select, panels } = useTabs('Tab');
+  const { baseId, value: active, select, transitioning, panels } = useTabs('Tab');
   const selected = value === active;
   return (
     <button
@@ -186,7 +201,9 @@ export function Tab({ value, className, children, onClick, ...rest }: TabProps) 
         <span
           className="mg-tab__indicator"
           aria-hidden="true"
-          style={{ viewTransitionName: vtName('mg-tab-indicator', baseId) } as CSSProperties}
+          style={
+            transitioning ? ({ viewTransitionName: vtName('mg-tab-indicator', baseId) } as CSSProperties) : undefined
+          }
         />
       )}
     </button>
@@ -200,7 +217,7 @@ export interface TabPanelProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 export function TabPanel({ value, keepMounted = false, className, children, style, ...rest }: TabPanelProps) {
-  const { baseId, value: active, listRef, select, setPanel } = useTabs('TabPanel');
+  const { baseId, value: active, listRef, select, transitioning, setPanel } = useTabs('TabPanel');
   const ref = useRef<HTMLDivElement>(null);
   const selected = value === active;
   const present = selected || keepMounted;
@@ -230,7 +247,7 @@ export function TabPanel({ value, keepMounted = false, className, children, styl
       hidden={!selected}
       className={cx('mg-tabpanel', 'mg-focusable', className)}
       style={
-        selected
+        selected && transitioning
           ? ({ viewTransitionName: vtName('mg-tabpanel', baseId), ...style } as CSSProperties)
           : style
       }

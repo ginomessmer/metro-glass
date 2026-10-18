@@ -66,6 +66,16 @@
         --mg-light-y var(--mg-duration-slow) var(--mg-ease-out),
         opacity var(--mg-duration-normal) var(--mg-ease-out);
     }
+
+    /*
+     * Touch has no hover trail to smooth out, and easing the light across a
+     * soft-light blend over backdrop-filter repaints every frame. Snap it.
+     */
+    @media (hover: none) {
+      &::after {
+        transition: opacity var(--mg-duration-normal) var(--mg-ease-out);
+      }
+    }
   }
 
   /* Accent-tinted glass (tiles, accent buttons). */

@@ -2,6 +2,7 @@ import {
   Children,
   useEffect,
   useId,
+  useLayoutEffect,
   useRef,
   useState,
   type AnchorHTMLAttributes,
@@ -103,6 +104,10 @@ export function Tile(props: TileProps) {
   const [index, setIndex] = useState(0);
   const [hold, setHold] = useState(false);
   const faceId = useId();
+  // Enter animation queued by the interval, played once the next face is in the DOM.
+  const pendingEnter = useRef<{ keyframes: Keyframe[]; timing: KeyframeAnimationOptions } | null>(
+    null,
+  );
 
   const interactive = 'href' in rest ? rest.href !== undefined : 'onClick' in rest && !!rest.onClick;
   usePressTilt(ref, { disabled: !interactive });
@@ -126,20 +131,28 @@ export function Tile(props: TileProps) {
       };
       current.animate(out, timing).finished.then(
         () => {
+          pendingEnter.current = {
+            keyframes: enter,
+            timing: { ...timing, easing: 'cubic-bezier(0.1, 0.9, 0.2, 1)', fill: 'none' },
+          };
           setIndex(next);
-          requestAnimationFrame(() => {
-            el.querySelector<HTMLElement>('[data-face-active]')?.animate(enter, {
-              ...timing,
-              easing: 'cubic-bezier(0.1, 0.9, 0.2, 1)',
-              fill: 'none',
-            });
-          });
         },
         () => setIndex(next),
       );
     }, liveInterval);
     return () => clearInterval(timer);
   }, [isLive, paused, hold, index, faces.length, liveAnimation, liveInterval, reducedMotion]);
+
+  // Start the enter animation before the browser paints the new face; waiting
+  // for a rAF showed it fully visible for one frame, then snapped it away.
+  useLayoutEffect(() => {
+    const pending = pendingEnter.current;
+    if (!pending) return;
+    pendingEnter.current = null;
+    ref.current
+      ?.querySelector<HTMLElement>('[data-face-active]')
+      ?.animate(pending.keyframes, pending.timing);
+  }, [index]);
 
   const tileStyle: CSSProperties = {
     ...(accent ? { '--mg-accent': resolveAccent(accent) } : {}),
